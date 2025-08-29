@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gustavoz65/CRUD-NBS-GO/database"
+	"github.com/gustavoz65/CRUD-NBS-GO/routes"
 )
 
 func main() {
-	db := conectarDB()
+	r := gin.Default()
+	routes.SetupRoutes(r)
+	gin.SetMode(gin.ReleaseMode)
+
+	db := database.ConectarDB()
+
 	defer db.Close()
 
-	fmt.Println("Conexão estabelecida com sucesso")
-
-	router := gin.Default()
-
-	gin.SetMode(gin.ReleaseMode)
 }
