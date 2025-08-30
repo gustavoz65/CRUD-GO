@@ -8,5 +8,7 @@ import (
 func SetupRoutes(r *gin.Engine) {
 	r.POST("/createPessoa", controller.CreatePessoas)
 	r.PUT("/updatePessoa", controller.UpdatePessoas)
+	r.GET("/getPessoas", controller.GetPessoas)
+	r.DELETE("/deletePessoa", controller.DeletePessoas)
 	r.Run(":8080")
 }
