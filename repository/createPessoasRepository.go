@@ -13,8 +13,15 @@ func (r *CreatePessoasRepository) CreatePessoas(pessoa models.Pessoa) error {
 	db := database.ConectarDB()
 	defer db.Close()
 
-	query := `INSERT INTO pessoas (nome, descricao) VALUES (?, ?)`
-	_, err := db.Exec(query, pessoa.Nome, pessoa.Descricao)
+	query := `INSERT INTO pessoas (nome, descricao, ativo, altura_metros, nascimento, cep) 
+          VALUES (?, ?, ?, ?, ?, ?)`
+	_, err := db.Exec(query,
+		pessoa.Nome,
+		pessoa.Descricao,
+		pessoa.Ativo,
+		pessoa.Altura_metros,
+		pessoa.Nascimento,
+		pessoa.Cep)
 	if err != nil {
 		return err
 	}

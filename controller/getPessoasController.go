@@ -1,23 +1,39 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
-	"github.com/gustavoz65/CRUD-NBS-GO/models"
 	"github.com/gustavoz65/CRUD-NBS-GO/repository"
 )
 
 func GetPessoas(c *gin.Context) {
-	var pessoa models.Pessoa
+	pessoaRepo := &repository.GetPessoasRepository{}
 
-	if err := c.ShouldBindJSON(&pessoa); err != nil {
-		c.JSON(400, gin.H{"error": "dados Invalidos"})
+	pessoas, err := pessoaRepo.GetPessoas()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar pessoas"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"pessoas": pessoas})
+}
+
+func GetPessoaById(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
 	pessoaRepo := &repository.GetPessoasRepository{}
-	if err := pessoaRepo.GetPessoas(pessoa); err != nil {
-		c.JSON(500, gin.H{"error": "Erro ao Buscar Pessoas no Banco de Dados"})
+	pessoa, err := pessoaRepo.GetPessoaById(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Pessoa não encontrada"})
 		return
 	}
-	c.JSON(200, gin.H{"message": "Pessoa achada com sucesso", "nome": pessoa.Nome})
+
+	c.JSON(http.StatusOK, gin.H{"pessoa": pessoa})
 }

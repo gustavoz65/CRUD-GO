@@ -12,8 +12,8 @@ func (r *DeletePessoasRepository) DeletePessoas(pessoa models.Pessoa) error {
 	db := database.ConectarDB()
 	defer db.Close()
 
-	query := `DELETE FROM pessoas WHERE id = ?`
-	_, err := db.Exec(query, pessoa.Id)
+	query := `UPDATE pessoas SET deletado_em = ? WHERE id = ?`
+	_, err := db.Exec(query, pessoa.Deletado_em, pessoa.Id)
 	if err != nil {
 		return err
 	}

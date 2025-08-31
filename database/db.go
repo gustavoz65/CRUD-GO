@@ -9,7 +9,7 @@ import (
 )
 
 func ConectarDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:senha123@tcp(127.0.0.1:3306)/CRUDGio")
+	db, err := sql.Open("mysql", "root:senha123@tcp(127.0.0.1:3306)/CRUDGio?parseTime=true&loc=Local")
 	if err != nil {
 		panic(err.Error())
 	} else {

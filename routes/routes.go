@@ -6,9 +6,10 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	r.POST("/createPessoa", controller.CreatePessoas)
-	r.PUT("/updatePessoa", controller.UpdatePessoas)
-	r.GET("/getPessoas", controller.GetPessoas)
-	r.DELETE("/deletePessoa", controller.DeletePessoas)
-	r.Run(":8080")
+	// Rotas para pessoas (padrão REST)
+	r.POST("/pessoas", controller.CreatePessoas)
+	r.GET("/pessoas", controller.GetPessoas)
+	r.GET("/pessoas/:id", controller.GetPessoaById)
+	r.PUT("/pessoas/:id", controller.UpdatePessoas)
+	r.DELETE("/pessoas/:id", controller.DeletePessoas)
 }
