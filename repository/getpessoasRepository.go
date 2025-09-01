@@ -12,7 +12,6 @@ import (
 type GetPessoasRepository struct {
 }
 
-// GetPessoas retorna todas as pessoas ativas
 func (r *GetPessoasRepository) GetPessoas() ([]models.Pessoa, error) {
 	fmt.Println("=== INICIANDO BUSCA DE PESSOAS ===")
 
@@ -58,7 +57,7 @@ func (r *GetPessoasRepository) GetPessoas() ([]models.Pessoa, error) {
 		}
 
 		fmt.Println("Pessoa escaneada:", pessoa.Nome)
-		// Converter NullTime para *time.Time
+
 		if deletadoEm.Valid {
 			pessoa.Deletado_em = &deletadoEm.Time
 		}
@@ -66,7 +65,6 @@ func (r *GetPessoasRepository) GetPessoas() ([]models.Pessoa, error) {
 			pessoa.Atualizado_em = &atualizadoEm.Time
 		}
 
-		// Buscar telefones da pessoa
 		telefones, err := r.getTelefonesByPessoaId(db, pessoa.Id)
 		if err != nil {
 			return nil, err
@@ -85,7 +83,6 @@ func (r *GetPessoasRepository) GetPessoas() ([]models.Pessoa, error) {
 	return pessoas, nil
 }
 
-// GetPessoaById retorna uma pessoa específica por ID
 func (r *GetPessoasRepository) GetPessoaById(id int) (*models.Pessoa, error) {
 	db := database.ConectarDB()
 	defer db.Close()
@@ -114,7 +111,6 @@ func (r *GetPessoasRepository) GetPessoaById(id int) (*models.Pessoa, error) {
 		return nil, err
 	}
 
-	// Converter NullTime para *time.Time
 	if deletadoEm.Valid {
 		pessoa.Deletado_em = &deletadoEm.Time
 	}
@@ -122,7 +118,6 @@ func (r *GetPessoasRepository) GetPessoaById(id int) (*models.Pessoa, error) {
 		pessoa.Atualizado_em = &atualizadoEm.Time
 	}
 
-	// Buscar telefones da pessoa
 	telefones, err := r.getTelefonesByPessoaId(db, pessoa.Id)
 	if err != nil {
 		return nil, err
@@ -132,7 +127,6 @@ func (r *GetPessoasRepository) GetPessoaById(id int) (*models.Pessoa, error) {
 	return &pessoa, nil
 }
 
-// getTelefonesByPessoaId busca os telefones de uma pessoa específica
 func (r *GetPessoasRepository) getTelefonesByPessoaId(db *sql.DB, pessoaId int) ([]models.Telefone, error) {
 	query := `SELECT id, pessoa_id, telefone FROM telefones WHERE pessoa_id = ?`
 
@@ -152,7 +146,6 @@ func (r *GetPessoasRepository) getTelefonesByPessoaId(db *sql.DB, pessoaId int) 
 		telefones = append(telefones, telefone)
 	}
 
-	// Verificar se houve erro durante a iteração
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
