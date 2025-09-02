@@ -12,7 +12,6 @@ import (
 type GetPessoasRepository struct {
 }
 
-// GetPessoas retorna todas as pessoas ativas - tenta procedure primeiro, depois query direta
 func (r *GetPessoasRepository) GetPessoas() ([]models.Pessoa, error) {
 	fmt.Println("=== INICIANDO BUSCA DE PESSOAS ===")
 
@@ -21,7 +20,6 @@ func (r *GetPessoasRepository) GetPessoas() ([]models.Pessoa, error) {
 
 	fmt.Println("Conexão OK")
 
-	// TENTATIVA 1: Usar stored procedure
 	fmt.Println("Tentando com stored procedure...")
 	pessoas, err := r.getPessoasWithProcedure(db)
 	if err == nil {
@@ -32,7 +30,6 @@ func (r *GetPessoasRepository) GetPessoas() ([]models.Pessoa, error) {
 	fmt.Println("Falha na stored procedure:", err)
 	fmt.Println("Tentando com query direta...")
 
-	// TENTATIVA 2: Usar query direta (fallback)
 	pessoas, err = r.getPessoasWithQuery(db)
 	if err != nil {
 		fmt.Println("Falha também na query direta:", err)
@@ -43,12 +40,10 @@ func (r *GetPessoasRepository) GetPessoas() ([]models.Pessoa, error) {
 	return pessoas, nil
 }
 
-// GetPessoaById retorna uma pessoa específica por ID - tenta procedure primeiro, depois query direta
 func (r *GetPessoasRepository) GetPessoaById(id int) (*models.Pessoa, error) {
 	db := database.ConectarDB()
 	defer db.Close()
 
-	// TENTATIVA 1: Usar stored procedure
 	fmt.Println("Tentando buscar pessoa por ID com stored procedure...")
 	pessoa, err := r.getPessoaByIdWithProcedure(db, id)
 	if err == nil {
@@ -59,7 +54,6 @@ func (r *GetPessoasRepository) GetPessoaById(id int) (*models.Pessoa, error) {
 	fmt.Println("Falha na stored procedure:", err)
 	fmt.Println("Tentando com query direta...")
 
-	// TENTATIVA 2: Usar query direta (fallback)
 	pessoa, err = r.getPessoaByIdWithQuery(db, id)
 	if err != nil {
 		fmt.Println("Falha também na query direta:", err)
@@ -70,7 +64,6 @@ func (r *GetPessoasRepository) GetPessoaById(id int) (*models.Pessoa, error) {
 	return pessoa, nil
 }
 
-// getPessoasWithProcedure - implementação usando stored procedure
 func (r *GetPessoasRepository) getPessoasWithProcedure(db *sql.DB) ([]models.Pessoa, error) {
 	query := `CALL sp_buscar_pessoas()`
 	fmt.Println("Query (procedure):", query)
@@ -84,7 +77,6 @@ func (r *GetPessoasRepository) getPessoasWithProcedure(db *sql.DB) ([]models.Pes
 	return r.scanPessoas(db, rows)
 }
 
-// getPessoasWithQuery - implementação usando query direta
 func (r *GetPessoasRepository) getPessoasWithQuery(db *sql.DB) ([]models.Pessoa, error) {
 	query := `SELECT id, nome, descricao, ativo, altura_metros, nascimento, cep, 
 			  deletado_em, atualizado_em FROM pessoas WHERE deletado_em IS NULL`
@@ -99,7 +91,6 @@ func (r *GetPessoasRepository) getPessoasWithQuery(db *sql.DB) ([]models.Pessoa,
 	return r.scanPessoas(db, rows)
 }
 
-// getPessoaByIdWithProcedure - busca por ID usando stored procedure
 func (r *GetPessoasRepository) getPessoaByIdWithProcedure(db *sql.DB, id int) (*models.Pessoa, error) {
 	query := `CALL sp_buscar_pessoa_por_id(?)`
 
@@ -127,7 +118,6 @@ func (r *GetPessoasRepository) getPessoaByIdWithProcedure(db *sql.DB, id int) (*
 	return r.buildPessoa(&pessoa, deletadoEm, atualizadoEm, db)
 }
 
-// getPessoaByIdWithQuery - busca por ID usando query direta
 func (r *GetPessoasRepository) getPessoaByIdWithQuery(db *sql.DB, id int) (*models.Pessoa, error) {
 	query := `SELECT id, nome, descricao, ativo, altura_metros, nascimento, cep, 
 			  deletado_em, atualizado_em FROM pessoas WHERE id = ? AND deletado_em IS NULL`
@@ -156,7 +146,6 @@ func (r *GetPessoasRepository) getPessoaByIdWithQuery(db *sql.DB, id int) (*mode
 	return r.buildPessoa(&pessoa, deletadoEm, atualizadoEm, db)
 }
 
-// scanPessoas - função auxiliar para escanear múltiplas pessoas (reutilizada)
 func (r *GetPessoasRepository) scanPessoas(db *sql.DB, rows *sql.Rows) ([]models.Pessoa, error) {
 	fmt.Println("Query executada com sucesso")
 
@@ -194,7 +183,6 @@ func (r *GetPessoasRepository) scanPessoas(db *sql.DB, rows *sql.Rows) ([]models
 
 	fmt.Println("Total de pessoas encontradas:", len(pessoas))
 
-	// Verificar se houve erro durante a iteração
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -202,7 +190,6 @@ func (r *GetPessoasRepository) scanPessoas(db *sql.DB, rows *sql.Rows) ([]models
 	return pessoas, nil
 }
 
-// buildPessoa - função auxiliar para construir uma pessoa completa com telefones
 func (r *GetPessoasRepository) buildPessoa(pessoa *models.Pessoa, deletadoEm, atualizadoEm sql.NullTime, db *sql.DB) (*models.Pessoa, error) {
 	// Converter NullTime para *time.Time
 	if deletadoEm.Valid {
@@ -212,7 +199,6 @@ func (r *GetPessoasRepository) buildPessoa(pessoa *models.Pessoa, deletadoEm, at
 		pessoa.Atualizado_em = &atualizadoEm.Time
 	}
 
-	// Buscar telefones da pessoa
 	telefones, err := r.getTelefonesByPessoaId(db, pessoa.Id)
 	if err != nil {
 		return nil, err
@@ -222,7 +208,6 @@ func (r *GetPessoasRepository) buildPessoa(pessoa *models.Pessoa, deletadoEm, at
 	return pessoa, nil
 }
 
-// getTelefonesByPessoaId busca os telefones de uma pessoa específica
 func (r *GetPessoasRepository) getTelefonesByPessoaId(db *sql.DB, pessoaId int) ([]models.Telefone, error) {
 	query := `SELECT id, pessoa_id, telefone FROM telefones WHERE pessoa_id = ?`
 
