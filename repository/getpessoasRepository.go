@@ -191,7 +191,7 @@ func (r *GetPessoasRepository) scanPessoas(db *sql.DB, rows *sql.Rows) ([]models
 }
 
 func (r *GetPessoasRepository) buildPessoa(pessoa *models.Pessoa, deletadoEm, atualizadoEm sql.NullTime, db *sql.DB) (*models.Pessoa, error) {
-	// Converter NullTime para *time.Time
+
 	if deletadoEm.Valid {
 		pessoa.Deletado_em = &deletadoEm.Time
 	}

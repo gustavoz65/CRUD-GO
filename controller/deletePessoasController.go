@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -18,9 +19,13 @@ func DeletePessoas(c *gin.Context) {
 
 	pessoaRepo := &repository.DeletePessoasRepository{}
 
-	if err := pessoaRepo.DeletePessoas(models.Pessoa{Id: id}); err != nil {
-		c.JSON(500, gin.H{"error": "Erro ao deletar pessoa, tente novamente"})
+	// Get DB from Gin context (assuming it's set as "db")
+	db, ok := c.MustGet("db").(*sql.DB)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Erro ao obter conexão com banco de dados"})
 		return
 	}
+
+	pessoaRepo.DeletePessoas(db, models.Pessoa{Id: id})
 	c.JSON(200, gin.H{"message": "Pessoa deletada com sucesso", "id": id})
 }
