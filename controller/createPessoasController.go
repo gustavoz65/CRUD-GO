@@ -15,7 +15,7 @@ func CreatePessoas(c *gin.Context) {
 
 	pessoaRepo := &repository.CreatePessoasRepository{}
 
-	if err := pessoaRepo.CreatePessoas(pessoa, true); err != nil {
+	if err := pessoaRepo.CreatePessoas(pessoa); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao criar pessoas, tente novamente"})
 		return
 	}
