@@ -33,7 +33,7 @@ func (r *GetCepPessoasRepository) GetCepPessoas(cep string) (*EnderecoViaCEP, er
 	}
 
 	if endereco.Erro {
-		return nil, fmt.Errorf("Cep não encontrado")
+		return nil, fmt.Errorf("cep não encontrado")
 	}
 
 	return &endereco, nil
