@@ -1,0 +1,21 @@
+{
+  "name": "crud-nbs-go",
+  "version": "1.0.0",
+  "description": "CRUD API em Go com Gin",
+  "scripts": {
+    "dev": "air",
+    "start": "go run main.go",
+    "build": "go build -o bin/main .",
+    "test": "go test ./...",
+    "docs": "swag init",
+    "docs:watch": "swag init -g main.go --parseDependency --parseInternal"
+  },
+  "keywords": [
+    "go",
+    "gin",
+    "api",
+    "crud"
+  ],
+  "author": "Gustavo",
+  "license": "MIT"
+}

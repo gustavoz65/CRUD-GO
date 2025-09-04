@@ -1,5 +1,7 @@
 .env
 go.sum
 go.mod
-
 .gitignore
+
+# Swagger docs (gerados automaticamente)
+docs/
